@@ -2,6 +2,7 @@ import os
 import traceback
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -12,6 +13,9 @@ from database import engine, get_db, SessionLocal
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
+
+# Mount Static Files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -64,11 +68,3 @@ async def get_ui(request: Request, db: Session = Depends(get_db)):
         )
     except Exception:
         return HTMLResponse(content=f"<pre>{traceback.format_exc()}</pre>", status_code=500)
-
-@app.get("/characters")
-def get_all_characters(db: Session = Depends(get_db)):
-    return db.query(models.Character).all()
-
-@app.get("/actors")
-def get_actors(db: Session = Depends(get_db)):
-    return db.query(models.Actor).all()
