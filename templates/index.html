@@ -30,14 +30,23 @@
             background: rgba(0, 0, 0, 0.5); z-index: -1;
         }
 
-        .page-title {
-            color: #f1c40f;
-            font-size: 3.5rem;
-            text-shadow: 4px 4px 0px #000;
+        /* HEADER GIF BOX */
+        .title-gif-container {
+            width: 100%;
+            max-width: 500px; 
             margin-bottom: 50px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            text-align: center;
+            border: 8px solid var(--card-gold);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px var(--card-gold), 0 10px 30px rgba(0,0,0,0.8);
+            background: black;
+            line-height: 0; /* Removes tiny gap at bottom of image */
+        }
+
+        .title-gif {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .cards-wrapper { 
@@ -48,6 +57,7 @@
             gap: 30px;
         }
 
+        /* Card Styling */
         .card-container { width: 300px; height: 420px; perspective: 1000px; }
         .card-inner { 
             position: relative; 
@@ -82,7 +92,6 @@
         .card-image {
             width: 100%; 
             height: 70%;
-            /* Fills the frame and keeps pixel art crisp */
             object-fit: cover; 
             object-position: top; 
             image-rendering: pixelated; 
@@ -147,7 +156,11 @@
 </head>
 <body>
 
-    <h1 class="page-title">ADVENTURE TIME INFO CARDS</h1>
+    <div class="title-gif-container">
+        <img src="https://i.pinimg.com/originals/b9/4f/98/b94f98f21ed786ac8da859060d79f6f8.gif" 
+             alt="Adventure Time Title" 
+             class="title-gif">
+    </div>
 
     <div class="cards-wrapper">
         {% for char in characters %}
