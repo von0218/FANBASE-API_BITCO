@@ -1,20 +1,17 @@
 import os
-import traceback
 from fastapi import FastAPI, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-
 import models
 from database import engine, get_db, SessionLocal
 
-# Initialize Database
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Adventure Time Fanbase API")
+app = FastAPI()
 
-# Mount root for images
+# Serving PNGs from root
 app.mount("/static", StaticFiles(directory="."), name="static")
 templates = Jinja2Templates(directory="templates")
 
@@ -36,7 +33,6 @@ def seed_data():
             db.add_all(actors.values())
             db.commit()
 
-            # UPDATED ABILITIES BASED ON WIKI
             characters = [
                 models.Character(name="Finn the Human", species="Human", actor_id=actors["jeremy"].id, 
                                  ability="Master Swordsman & Heroism: Skilled in multiple martial arts and immune to the Lich's mind control."),
@@ -61,8 +57,6 @@ def seed_data():
             ]
             db.add_all(characters)
             db.commit()
-    except Exception as e:
-        print(f"Seed Error: {e}")
     finally:
         db.close()
 
@@ -72,8 +66,5 @@ def read_root():
 
 @app.get("/ui", response_class=HTMLResponse)
 async def get_ui(request: Request, db: Session = Depends(get_db)):
-    try:
-        characters = db.query(models.Character).all()
-        return templates.TemplateResponse(request=request, name="index.html", context={"characters": characters})
-    except Exception:
-        return HTMLResponse(content=f"<pre>{traceback.format_exc()}</pre>", status_code=500)
+    characters = db.query(models.Character).all()
+    return templates.TemplateResponse(request=request, name="index.html", context={"characters": characters})
