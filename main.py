@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 import models
 from database import engine, get_db, SessionLocal
 
+# Initialize Database
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
@@ -18,7 +19,7 @@ def seed_data():
     db = SessionLocal()
     try:
         if not db.query(models.Actor).first():
-            actors_list = {
+            actors = {
                 "jeremy": models.Actor(name="Jeremy Shada"),
                 "john": models.Actor(name="John DiMaggio"),
                 "hynden": models.Actor(name="Hynden Walch"),
@@ -28,25 +29,23 @@ def seed_data():
                 "pendleton": models.Actor(name="Pendleton Ward"),
                 "jessica": models.Actor(name="Jessica DiCicco")
             }
-            db.add_all(actors_list.values())
+            db.add_all(actors.values())
             db.commit()
 
             characters = [
-                models.Character(name="Finn the Human", species="Human", actor_id=actors_list["jeremy"].id),
-                models.Character(name="Jake the Dog", species="Magical Dog", actor_id=actors_list["john"].id),
-                models.Character(name="Princess Bubblegum", species="Gum Person", actor_id=actors_list["hynden"].id),
-                models.Character(name="Marceline the Vampire Queen", species="Vampire/Demon", actor_id=actors_list["olivia"].id),
-                models.Character(name="Ice King", species="Wizard", actor_id=actors_list["tom"].id),
-                models.Character(name="BMO", species="Video Game Console", actor_id=actors_list["niki"].id),
-                models.Character(name="Lumpy Space Princess", species="Lumpy Space Person", actor_id=actors_list["pendleton"].id),
-                models.Character(name="Flame Princess", species="Fire Elemental", actor_id=actors_list["jessica"].id),
-                models.Character(name="Lady Rainicorn", species="Rainicorn", actor_id=actors_list["niki"].id),
-                models.Character(name="Gunther", species="Penguin", actor_id=actors_list["tom"].id)
+                models.Character(name="Finn the Human", species="Human", actor_id=actors["jeremy"].id),
+                models.Character(name="Jake the Dog", species="Magical Dog", actor_id=actors["john"].id),
+                models.Character(name="Princess Bubblegum", species="Gum Person", actor_id=actors["hynden"].id),
+                models.Character(name="Marceline the Vampire Queen", species="Vampire/Demon", actor_id=actors["olivia"].id),
+                models.Character(name="Ice King", species="Wizard", actor_id=actors["tom"].id),
+                models.Character(name="BMO", species="Console", actor_id=actors["niki"].id),
+                models.Character(name="Lumpy Space Princess", species="Lumpy Space Person", actor_id=actors["pendleton"].id),
+                models.Character(name="Flame Princess", species="Fire Elemental", actor_id=actors["jessica"].id),
+                models.Character(name="Lady Rainicorn", species="Rainicorn", actor_id=actors["niki"].id),
+                models.Character(name="Gunther", species="Penguin", actor_id=actors["tom"].id)
             ]
             db.add_all(characters)
             db.commit()
-    except Exception as e:
-        print(f"Seed Error: {e}")
     finally:
         db.close()
 
@@ -64,8 +63,7 @@ async def get_ui(request: Request, db: Session = Depends(get_db)):
             context={"characters": characters}
         )
     except Exception:
-        error_msg = traceback.format_exc()
-        return HTMLResponse(content=f"<h3>UI Error Details:</h3><pre>{error_msg}</pre>", status_code=500)
+        return HTMLResponse(content=f"<pre>{traceback.format_exc()}</pre>", status_code=500)
 
 @app.get("/characters")
 def get_all_characters(db: Session = Depends(get_db)):
