@@ -9,24 +9,20 @@ from sqlalchemy.orm import Session
 import models
 from database import engine, get_db, SessionLocal
 
-# --- AUTO-PATH DETECTION ---
-# This finds the folder even if your code is in /src/ or /app/
+# --- DYNAMIC PATH DETECTION ---
+# This finds the folders regardless of Render's internal directory structure
 base_dir = os.path.dirname(os.path.realpath(__file__))
 static_path = os.path.join(base_dir, "static")
 templates_path = os.path.join(base_dir, "templates")
 
-# CRASH PROTECTION: If the folder is missing, create it so the app doesn't die
-if not os.path.exists(static_path):
-    os.makedirs(static_path)
-    os.makedirs(os.path.join(static_path, "images"))
-# ---------------------------
-
+# Initialize Database
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# Use the dynamic path we detected above
+# Mount Static Files using the absolute path we just created
 app.mount("/static", StaticFiles(directory=static_path), name="static")
+
 templates = Jinja2Templates(directory=templates_path)
 
 @app.on_event("startup")
@@ -62,7 +58,7 @@ def seed_data():
             db.add_all(characters)
             db.commit()
     except Exception as e:
-        print(f"Seed error: {e}")
+        print(f"Seed Error: {e}")
     finally:
         db.close()
 
