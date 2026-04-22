@@ -10,7 +10,6 @@
         }
 
         body { 
-            /* Pulling from your newly created static/images folder */
             background-image: url('/static/images/bg.gif'); 
             background-size: cover;
             background-position: center;
@@ -21,10 +20,9 @@
             padding: 40px;
             margin: 0;
             min-height: 100vh;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Dark overlay so the cards are easier to read */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); z-index: -1;
@@ -36,12 +34,7 @@
         .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; border: 10px solid var(--card-gold); box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         .card-front { background-color: var(--card-blue); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .art-placeholder { 
-            width: 85%; height: 65%; border: 3px dashed rgba(255,255,255,0.5); 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; text-align: center; font-size: 1.3rem;
-            background: rgba(255,255,255,0.1);
-        }
+        .art-placeholder { width: 85%; height: 65%; border: 3px dashed rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-weight: bold; text-align: center; font-size: 1.3rem; background: rgba(255,255,255,0.1); }
 
         .card-back { background-color: #fff; color: var(--text-dark); transform: rotateY(180deg); padding: 20px; display: flex; flex-direction: column; }
         .header { display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid var(--text-dark); padding-bottom: 5px; }
@@ -52,7 +45,6 @@
     </style>
 </head>
 <body>
-
     {% for char in characters %}
     <div class="card-container">
         <div class="card-inner">
@@ -60,19 +52,15 @@
                 <div class="art-placeholder">{{ char.name }}</div>
                 <p style="font-size: 0.7rem; letter-spacing: 2px; margin-top: 15px; font-weight: bold;">ADVENTURE TIME TCG</p>
             </div>
-            
             <div class="card-back">
                 <div class="header">
                     <span>{{ char.name.split(' ')[0] }}</span>
                     <span class="hp">120 HP</span>
                 </div>
-
                 <span class="label">Species</span>
                 <span class="val">{{ char.species }}</span>
-
                 <span class="label">Voice Actor</span>
                 <span class="val">{{ char.voice_actor.name if char.voice_actor else "Unknown" }}</span>
-                
                 <div class="ability">
                     <strong>Ability: Mathematical!</strong><br>
                     Increases party algebraic levels by +15.
@@ -81,6 +69,5 @@
         </div>
     </div>
     {% endfor %}
-
 </body>
 </html>
