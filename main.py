@@ -2,28 +2,19 @@ import os
 import traceback
 from fastapi import FastAPI, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 import models
 from database import engine, get_db, SessionLocal
 
-# --- DYNAMIC PATH DETECTION ---
-# This finds the folders regardless of Render's internal directory structure
-base_dir = os.path.dirname(os.path.realpath(__file__))
-static_path = os.path.join(base_dir, "static")
-templates_path = os.path.join(base_dir, "templates")
-
 # Initialize Database
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# Mount Static Files using the absolute path we just created
-app.mount("/static", StaticFiles(directory=static_path), name="static")
-
-templates = Jinja2Templates(directory=templates_path)
+# We only need the templates folder now
+templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
 def seed_data():
@@ -58,7 +49,7 @@ def seed_data():
             db.add_all(characters)
             db.commit()
     except Exception as e:
-        print(f"Seed Error: {e}")
+        print(f"Seed error: {e}")
     finally:
         db.close()
 
