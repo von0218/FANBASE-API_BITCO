@@ -1,7 +1,6 @@
 import os
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -13,9 +12,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# MOUNT STATIC AND TEMPLATES
-# Create these folders in your project root if they don't exist
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Only mount templates for now since we aren't using local images
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -53,17 +50,16 @@ def seed_data():
     finally:
         db.close()
 
-# --- NEW UI ROUTE ---
 @app.get("/ui", response_class=HTMLResponse)
 def get_ui(request: Request, db: Session = Depends(get_db)):
     characters = db.query(models.Character).all()
     return templates.TemplateResponse("index.html", {"request": request, "characters": characters})
 
-# --- JSON API ENDPOINTS ---
 @app.get("/")
 def read_root():
     return {"message": "Welcome!", "visit_ui": "/ui"}
 
+# Standard API endpoints
 @app.get("/characters")
 def get_all_characters(db: Session = Depends(get_db)):
     return db.query(models.Character).all()
