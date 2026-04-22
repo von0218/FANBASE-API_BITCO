@@ -1,29 +1,28 @@
 import os
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-# Explicitly import from local files
 import models
 from database import engine, get_db, SessionLocal
 
-# Create the database tables on startup
+# Create tables
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="Adventure Time Fanbase API",
-    description="An API for the Land of Ooo - Characters and Voice Actors"
-)
+app = FastAPI(title="Adventure Time Fanbase API")
 
-# Seeding logic to ensure the DB isn't empty on Render
+# MOUNT STATIC AND TEMPLATES
+# Create these folders in your project root if they don't exist
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
 @app.on_event("startup")
 def seed_data():
     db = SessionLocal()
     try:
-        # Check if any actors exist; if not, seed the database
         if not db.query(models.Actor).first():
-            print("Seeding database with Adventure Time data...")
-            
-            # Define all Actors
             actors_list = {
                 "jeremy": models.Actor(name="Jeremy Shada"),
                 "john": models.Actor(name="John DiMaggio"),
@@ -37,7 +36,6 @@ def seed_data():
             db.add_all(actors_list.values())
             db.commit()
 
-            # Define all Characters
             characters = [
                 models.Character(name="Finn the Human", species="Human", actor_id=actors_list["jeremy"].id),
                 models.Character(name="Jake the Dog", species="Magical Dog", actor_id=actors_list["john"].id),
@@ -52,38 +50,23 @@ def seed_data():
             ]
             db.add_all(characters)
             db.commit()
-            print("Seeding complete!")
-    except Exception as e:
-        print(f"Error seeding data: {e}")
     finally:
         db.close()
 
-# --- Endpoints ---
+# --- NEW UI ROUTE ---
+@app.get("/ui", response_class=HTMLResponse)
+def get_ui(request: Request, db: Session = Depends(get_db)):
+    characters = db.query(models.Character).all()
+    return templates.TemplateResponse("index.html", {"request": request, "characters": characters})
 
+# --- JSON API ENDPOINTS ---
 @app.get("/")
 def read_root():
-    return {
-        "message": "Welcome to the Adventure Time API",
-        "instructions": "Go to /docs to see the interactive API documentation."
-    }
+    return {"message": "Welcome!", "visit_ui": "/ui"}
 
 @app.get("/characters")
 def get_all_characters(db: Session = Depends(get_db)):
-    # Joining with Actor table to get the name directly
     return db.query(models.Character).all()
-
-@app.get("/characters/{char_id}")
-def get_character(char_id: int, db: Session = Depends(get_db)):
-    char = db.query(models.Character).filter(models.Character.id == char_id).first()
-    if not char:
-        raise HTTPException(status_code=404, detail="Character not found in Ooo")
-    
-    return {
-        "id": char.id,
-        "name": char.name,
-        "species": char.species,
-        "voice_actor": char.voice_actor.name if char.voice_actor else "Unknown"
-    }
 
 @app.get("/actors")
 def get_actors(db: Session = Depends(get_db)):
