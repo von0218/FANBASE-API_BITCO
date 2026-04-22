@@ -2,103 +2,52 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Ooo Information Cards</title>
+    <title>Ooo Trading Cards</title>
     <style>
         :root { 
-            --card-gold: #f1c40f; 
-            --card-blue: rgba(52, 152, 219, 0.9); 
-            --text-dark: #2c3e50;
-            --bmo-green: #7fbfad; 
-            --bmo-dark: #3c5e54;
+            --card-gold: #f1c40f; --card-blue: rgba(52, 152, 219, 0.9); 
+            --text-dark: #2c3e50; --bmo-green: #7fbfad; --bmo-dark: #3c5e54;
         }
-
         body { 
-            background-color: #2c3e50; 
-            background-image: url('https://i.imgur.com/T6KukmD.gif'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            padding: 40px;
-            margin: 0;
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            padding-bottom: 150px; /* Space for BMO player */
+            background-color: #2c3e50; background-image: url('https://i.imgur.com/T6KukmD.gif'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; flex-direction: column; align-items: center; padding: 40px; margin: 0;
+            padding-bottom: 150px; /* Space for BMO */
         }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: -1; }
 
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: -1;
-        }
-
-        /* WIDESCREEN RECTANGLE HEADER */
+        /* RECTANGLE HEADER */
         .title-gif-container {
-            width: 100%;
-            max-width: 420px; 
-            margin-bottom: 50px;
-            border: 8px solid var(--card-gold);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 0 20px var(--card-gold), 0 10px 30px rgba(0,0,0,0.8);
-            background: black;
-            aspect-ratio: 16 / 9; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%; max-width: 420px; margin-bottom: 50px; border: 8px solid var(--card-gold);
+            border-radius: 15px; overflow: hidden; aspect-ratio: 16 / 9; display: flex;
         }
-
         .title-gif { width: 100%; height: 100%; object-fit: cover; }
 
-        /* CARDS WRAPPER */
-        .cards-wrapper { 
-            display: flex; flex-wrap: wrap; justify-content: center; 
-            max-width: 1400px; gap: 30px;
-        }
-
+        /* CARD STYLES */
+        .cards-wrapper { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
         .card-container { width: 300px; height: 420px; perspective: 1000px; }
-        .card-inner { 
-            position: relative; width: 100%; height: 100%; 
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            transform-style: preserve-3d; cursor: pointer; 
-        }
+        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
         .card-container:hover .card-inner { transform: rotateY(180deg); }
-
-        .card-front, .card-back { 
-            position: absolute; width: 100%; height: 100%; 
-            backface-visibility: hidden; border-radius: 20px; 
-            border: 12px solid var(--card-gold); box-sizing: border-box; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6); 
-        }
-
-        .card-front { background-color: var(--card-blue); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; border: 12px solid var(--card-gold); box-sizing: border-box; }
+        .card-front { background-color: var(--card-blue); display: flex; flex-direction: column; align-items: center; padding: 20px; color: white; }
         .card-image { width: 100%; height: 70%; object-fit: cover; border-radius: 10px; border: 3px solid white; }
-        .card-name-front { font-weight: 900; margin-top: 20px; font-size: 1.4rem; color: white; text-transform: uppercase; }
-
-        .card-back { background-color: #ffffff; color: var(--text-dark); transform: rotateY(180deg); padding: 25px; display: flex; flex-direction: column; }
-        .header { display: flex; justify-content: space-between; border-bottom: 3px solid var(--text-dark); padding-bottom: 8px; font-weight: bold; }
+        .card-name-front { font-weight: 900; margin-top: 20px; text-transform: uppercase; }
+        .card-back { background-color: white; transform: rotateY(180deg); padding: 25px; display: flex; flex-direction: column; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--text-dark); font-weight: bold; }
         .hp { color: #e74c3c; }
-        .label { font-size: 0.75rem; color: #95a5a6; text-transform: uppercase; margin-top: 18px; font-weight: 800; }
-        .val { font-size: 1.1rem; border-bottom: 1px solid #eee; font-weight: 500; }
-        .ability-box { margin-top: auto; font-size: 0.85rem; line-height: 1.4; background: #fdfefe; padding: 12px; border-radius: 10px; border-left: 5px solid var(--card-gold); }
+        .label { font-size: 0.7rem; color: #95a5a6; text-transform: uppercase; margin-top: 15px; font-weight: 800; }
+        .val { font-size: 1rem; border-bottom: 1px solid #eee; }
+        .ability-box { margin-top: auto; font-size: 0.8rem; background: #f9f9f9; padding: 10px; border-left: 5px solid var(--card-gold); }
 
-        /* BMO MUSIC PLAYER */
-        .bmo-player {
-            position: fixed; bottom: 20px; right: 20px; background: var(--bmo-green);
-            border: 4px solid var(--bmo-dark); border-radius: 15px; padding: 15px;
-            box-shadow: 8px 8px 0px var(--bmo-dark); z-index: 1000; width: 250px;
-        }
-
-        .bmo-screen { background: #2c3e50; border-radius: 5px; padding: 10px; color: #bdc3c7; font-size: 0.75rem; text-align: center; border: 2px solid var(--bmo-dark); margin-bottom: 10px;}
-        .playing-text { color: #2ecc71; font-weight: bold; display: none; }
+        /* BMO PLAYER */
+        .bmo-player { position: fixed; bottom: 20px; right: 20px; background: var(--bmo-green); border: 4px solid var(--bmo-dark); border-radius: 15px; padding: 15px; width: 250px; z-index: 1000; }
+        .bmo-screen { background: #2c3e50; border-radius: 5px; padding: 10px; color: #bdc3c7; font-size: 0.7rem; text-align: center; margin-bottom: 10px;}
         audio { width: 100%; height: 30px; filter: grayscale(100%) invert(10%); }
     </style>
 </head>
 <body>
-
     <div class="title-gif-container">
-        <img src="https://i.pinimg.com/originals/b9/4f/98/b94f98f21ed786ac8da859060d79f6f8.gif" alt="Intro GIF" class="title-gif">
+        <img src="https://i.pinimg.com/originals/b9/4f/98/b94f98f21ed786ac8da859060d79f6f8.gif" class="title-gif">
     </div>
 
     <div class="cards-wrapper">
@@ -106,7 +55,7 @@
         <div class="card-container">
             <div class="card-inner">
                 <div class="card-front">
-                    <img src="/static/{{ char.name.split(' ')[0].lower() }}.png" alt="{{ char.name }}" class="card-image" onerror="this.src='https://via.placeholder.com/200x250?text=No+Image'">
+                    <img src="/static/{{ char.name.split(' ')[0].lower() }}.png" class="card-image">
                     <div class="card-name-front">{{ char.name }}</div>
                 </div>
                 <div class="card-back">
@@ -123,19 +72,11 @@
     <div class="bmo-player">
         <div class="bmo-screen">
             <div id="status">BMO IDLE...</div>
-            <div id="song-name">Island Song (Ending Theme)</div>
-            <div class="playing-text" id="playing-indicator">▶ NOW PLAYING</div>
+            <div>Island Song (Ending Theme)</div>
         </div>
         <audio id="exit-song" controls loop>
-            <source src="/static/exit-song.mp3" type="audio/mpeg"> </audio>
+            <source src="/static/exit-song.mp3" type="audio/mpeg">
+        </audio>
     </div>
-
-    <script>
-        const audio = document.getElementById('exit-song');
-        const status = document.getElementById('status');
-        const indicator = document.getElementById('playing-indicator');
-        audio.onplay = () => { status.innerText = "BMO IS HAPPY!"; indicator.style.display = "block"; };
-        audio.onpause = () => { status.innerText = "BMO PAUSED."; indicator.style.display = "none"; };
-    </script>
 </body>
 </html>
