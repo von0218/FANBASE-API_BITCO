@@ -9,14 +9,19 @@ from sqlalchemy.orm import Session
 import models
 from database import engine, get_db, SessionLocal
 
-# Initialize Database
+# --- CRASH PREVENTION: Ensure folders exist before mounting ---
+if not os.path.exists("static"):
+    os.makedirs("static")
+if not os.path.exists("static/images"):
+    os.makedirs("static/images")
+# --------------------------------------------------------------
+
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# Mount Static Files - Ensure the 'static' folder exists in your GitHub
+# Mount Static Files
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -24,6 +29,7 @@ def seed_data():
     db = SessionLocal()
     try:
         if not db.query(models.Actor).first():
+            # Seed logic remains the same
             actors = {
                 "jeremy": models.Actor(name="Jeremy Shada"),
                 "john": models.Actor(name="John DiMaggio"),
@@ -52,7 +58,7 @@ def seed_data():
             db.add_all(characters)
             db.commit()
     except Exception as e:
-        print(f"Seed error: {e}")
+        print(f"Seed Error: {e}")
     finally:
         db.close()
 
@@ -70,5 +76,4 @@ async def get_ui(request: Request, db: Session = Depends(get_db)):
             context={"characters": characters}
         )
     except Exception:
-        error_msg = traceback.format_exc()
-        return HTMLResponse(content=f"<h3>UI Error</h3><pre>{error_msg}</pre>", status_code=500)
+        return HTMLResponse(content=f"<pre>{traceback.format_exc()}</pre>", status_code=500)
