@@ -25,7 +25,7 @@
             margin: 0;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            padding-bottom: 120px; /* Space so BMO doesn't cover cards */
+            padding-bottom: 150px;
         }
 
         body::before {
@@ -33,7 +33,7 @@
             background: rgba(0, 0, 0, 0.5); z-index: -1;
         }
 
-        /* HEADER GIF BOX */
+        /* WIDESCREEN RECTANGLE HEADER */
         .title-gif-container {
             width: 100%;
             max-width: 420px; 
@@ -56,45 +56,7 @@
             object-position: center; 
         }
 
-        /* FIXED BMO MUSIC PLAYER */
-        .bmo-player {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--bmo-green);
-            border: 4px solid var(--bmo-dark);
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 8px 8px 0px var(--bmo-dark);
-            z-index: 1000;
-            width: 250px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .bmo-screen {
-            background: #2c3e50;
-            border-radius: 5px;
-            padding: 10px;
-            color: #bdc3c7;
-            font-size: 0.75rem;
-            text-align: center;
-            border: 2px solid var(--bmo-dark);
-        }
-
-        .playing-text {
-            color: #2ecc71;
-            font-weight: bold;
-            display: none; /* Shown via JS */
-        }
-
-        audio {
-            width: 100%;
-            height: 30px;
-            filter: sepia(20%) saturate(70%) grayscale(100%) contrast(99%) invert(12%);
-        }
-
+        /* CARDS LAYOUT */
         .cards-wrapper { 
             display: flex; 
             flex-wrap: wrap; 
@@ -103,7 +65,6 @@
             gap: 30px;
         }
 
-        /* Card Styling (remain consistent) */
         .card-container { width: 300px; height: 420px; perspective: 1000px; }
         .card-inner { 
             position: relative; 
@@ -132,7 +93,6 @@
             flex-direction: column; 
             align-items: center; 
             padding: 20px;
-            color: white; 
         }
         
         .card-image {
@@ -152,6 +112,7 @@
             font-size: 1.4rem; 
             text-transform: uppercase; 
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            color: white;
         }
 
         .card-back { 
@@ -174,29 +135,52 @@
 
         .hp { color: #e74c3c; }
 
-        .label { 
-            font-size: 0.75rem; 
-            color: #95a5a6; 
-            text-transform: uppercase; 
-            margin-top: 18px; 
-            font-weight: 800;
-        }
-
-        .val { 
-            font-size: 1.1rem; 
-            border-bottom: 1px solid #eee; 
-            padding-bottom: 2px;
-            font-weight: 500;
-        }
+        .label { font-size: 0.75rem; color: #95a5a6; text-transform: uppercase; margin-top: 18px; font-weight: 800; }
+        .val { font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 2px; font-weight: 500; }
 
         .ability-box { 
             margin-top: auto; 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             line-height: 1.4;
             background: #fdfefe; 
             padding: 12px; 
             border-radius: 10px; 
             border-left: 5px solid var(--card-gold);
+        }
+
+        /* BMO MUSIC PLAYER */
+        .bmo-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bmo-green);
+            border: 4px solid var(--bmo-dark);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 8px 8px 0px var(--bmo-dark);
+            z-index: 1000;
+            width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bmo-screen {
+            background: #2c3e50;
+            border-radius: 5px;
+            padding: 10px;
+            color: #bdc3c7;
+            font-size: 0.75rem;
+            text-align: center;
+            border: 2px solid var(--bmo-dark);
+        }
+
+        .playing-text { color: #2ecc71; font-weight: bold; display: none; }
+
+        audio {
+            width: 100%;
+            height: 30px;
+            filter: sepia(20%) saturate(70%) grayscale(100%) contrast(99%) invert(12%);
         }
     </style>
 </head>
@@ -219,7 +203,6 @@
                          onerror="this.src='https://via.placeholder.com/200x250?text=No+Image'">
                     <div class="card-name-front">{{ char.name }}</div>
                 </div>
-                
                 <div class="card-back">
                     <div class="header">
                         <span>{{ char.name.split(' ')[0] }}</span>
@@ -246,8 +229,7 @@
             <div class="playing-text" id="playing-indicator">▶ NOW PLAYING</div>
         </div>
         <audio id="exit-song" controls loop>
-            <source src="https://www.mboxdrive.com/Adventure%20Time%20-%20Come%20Along%20With%20Me%20(Ending%20Song).mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
+            <source src="/static/exit-song.mp3" type="audio/mpeg">
         </audio>
     </div>
 
@@ -256,15 +238,8 @@
         const status = document.getElementById('status');
         const indicator = document.getElementById('playing-indicator');
 
-        audio.onplay = () => {
-            status.innerText = "BMO IS HAPPY!";
-            indicator.style.display = "block";
-        };
-
-        audio.onpause = () => {
-            status.innerText = "BMO PAUSED.";
-            indicator.style.display = "none";
-        };
+        audio.onplay = () => { status.innerText = "BMO IS HAPPY!"; indicator.style.display = "block"; };
+        audio.onpause = () => { status.innerText = "BMO PAUSED."; indicator.style.display = "none"; };
     </script>
 
 </body>
