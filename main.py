@@ -14,7 +14,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# MOUNT STATIC FILES - This allows the app to see your /static/images/bg.gif
+# Mount Static Files - Ensure the 'static' folder exists in your GitHub
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
@@ -51,10 +51,11 @@ def seed_data():
             ]
             db.add_all(characters)
             db.commit()
+    except Exception as e:
+        print(f"Seed error: {e}")
     finally:
         db.close()
 
-# AUTO-REDIRECT: Fixes the JSON message on the home page
 @app.get("/")
 def read_root():
     return RedirectResponse(url="/ui")
@@ -63,7 +64,6 @@ def read_root():
 async def get_ui(request: Request, db: Session = Depends(get_db)):
     try:
         characters = db.query(models.Character).all()
-        # request must be passed as a separate argument in the latest FastAPI
         return templates.TemplateResponse(
             request=request, 
             name="index.html", 
