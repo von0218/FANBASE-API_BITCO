@@ -1,18 +1,28 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-import models
-from database import engine, get_db
 
-# Create the database tables
+# Explicitly import from local files
+import models
+from database import engine, get_db, SessionLocal
+
+# Create the database tables on startup
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Adventure Time Fanbase API")
+app = FastAPI(
+    title="Adventure Time Fanbase API",
+    description="An API for the Land of Ooo - Characters and Voice Actors"
+)
 
+# Seeding logic to ensure the DB isn't empty on Render
 @app.on_event("startup")
 def seed_data():
     db = SessionLocal()
     try:
+        # Check if any actors exist; if not, seed the database
         if not db.query(models.Actor).first():
+            print("Seeding database with Adventure Time data...")
+            
             # Define all Actors
             actors_list = {
                 "jeremy": models.Actor(name="Jeremy Shada"),
@@ -42,28 +52,37 @@ def seed_data():
             ]
             db.add_all(characters)
             db.commit()
+            print("Seeding complete!")
+    except Exception as e:
+        print(f"Error seeding data: {e}")
     finally:
         db.close()
 
 # --- Endpoints ---
 
 @app.get("/")
-def home():
-    return {"message": "Welcome to the Land of Ooo API!", "docs": "/docs"}
+def read_root():
+    return {
+        "message": "Welcome to the Adventure Time API",
+        "instructions": "Go to /docs to see the interactive API documentation."
+    }
 
 @app.get("/characters")
 def get_all_characters(db: Session = Depends(get_db)):
+    # Joining with Actor table to get the name directly
     return db.query(models.Character).all()
 
 @app.get("/characters/{char_id}")
 def get_character(char_id: int, db: Session = Depends(get_db)):
     char = db.query(models.Character).filter(models.Character.id == char_id).first()
     if not char:
-        raise HTTPException(status_code=404, detail="Character not found")
+        raise HTTPException(status_code=404, detail="Character not found in Ooo")
+    
     return {
+        "id": char.id,
         "name": char.name,
         "species": char.species,
-        "voiced_by": char.voice_actor.name if char.voice_actor else "Unknown"
+        "voice_actor": char.voice_actor.name if char.voice_actor else "Unknown"
     }
 
 @app.get("/actors")
