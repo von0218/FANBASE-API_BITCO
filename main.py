@@ -12,7 +12,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# Mount templates
+# Mount templates - Ensure your folder is named 'templates' in GitHub
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -47,21 +47,24 @@ def seed_data():
             ]
             db.add_all(characters)
             db.commit()
+    except Exception as e:
+        print(f"Seed Error: {e}")
     finally:
         db.close()
 
-# --- REDIRECT ROOT TO UI ---
 @app.get("/")
 def read_root():
-    # This automatically sends the user to /ui
     return RedirectResponse(url="/ui")
 
 @app.get("/ui", response_class=HTMLResponse)
 def get_ui(request: Request, db: Session = Depends(get_db)):
-    characters = db.query(models.Character).all()
-    return templates.TemplateResponse("index.html", {"request": request, "characters": characters})
+    try:
+        characters = db.query(models.Character).all()
+        return templates.TemplateResponse("index.html", {"request": request, "characters": characters})
+    except Exception as e:
+        # This will show you the error in the browser if the page fails
+        return HTMLResponse(content=f"<html><body><h1>UI Error</h1><p>{str(e)}</p></body></html>", status_code=500)
 
-# Standard API endpoints
 @app.get("/characters")
 def get_all_characters(db: Session = Depends(get_db)):
     return db.query(models.Character).all()
