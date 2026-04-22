@@ -8,12 +8,9 @@ from sqlalchemy.orm import Session
 import models
 from database import engine, get_db, SessionLocal
 
-# Create tables
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
-
-# Ensure the folder is named 'templates' in your root directory
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -61,18 +58,15 @@ def read_root():
 async def get_ui(request: Request, db: Session = Depends(get_db)):
     try:
         characters = db.query(models.Character).all()
-        
-        # FIXED: Pass the context explicitly to avoid the 'tuple' error
         return templates.TemplateResponse(
+            request=request, 
             name="index.html", 
-            context={"request": request, "characters": characters}
+            context={"characters": characters}
         )
     except Exception:
-        # If it fails, this will show the full error in your browser for debugging
         error_msg = traceback.format_exc()
         return HTMLResponse(content=f"<h3>UI Error Details:</h3><pre>{error_msg}</pre>", status_code=500)
 
-# Standard API endpoints
 @app.get("/characters")
 def get_all_characters(db: Session = Depends(get_db)):
     return db.query(models.Character).all()
