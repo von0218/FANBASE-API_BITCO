@@ -13,7 +13,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# We only need the templates folder now
+# Only templates are needed since we use an external GIF URL
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
