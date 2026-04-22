@@ -1,17 +1,43 @@
-<div class="card-back">
-    <div class="header">
-        <span>{{ char.name.split(' ')[0] }}</span>
-        <span class="hp">120 HP</span>
-    </div>
-    
-    <span class="label">Species</span>
-    <span class="val">{{ char.species }}</span>
-    
-    <span class="label">Voice Actor</span>
-    <span class="val">{{ char.voice_actor.name if char.voice_actor else "Unknown" }}</span>
-    
-    <div class="ability">
-        <strong>Ability:</strong><br>
-        {{ char.ability }}
-    </div>
-</div>
+<body>
+
+    <h1 class="page-title">ADVENTURE TIME INFO CARDS</h1>
+
+    <div class="cards-wrapper">
+        {% for char in characters %}
+        
+        <div class="card-container">
+            <div class="card-inner">
+                
+                <div class="card-front">
+                    <img src="/static/{{ char.name.split(' ')[0].lower() }}.png" 
+                         alt="{{ char.name }}" 
+                         class="card-image"
+                         onerror="this.src='https://via.placeholder.com/200x250?text=No+Image'">
+                    <div class="card-name-front">{{ char.name }}</div>
+                </div>
+                
+                <div class="card-back">
+                    <div class="header">
+                        <span>{{ char.name.split(' ')[0] }}</span>
+                        <span class="hp">120 HP</span>
+                    </div>
+                    
+                    <span class="label">Species</span>
+                    <span class="val">{{ char.species }}</span>
+                    
+                    <span class="label">Voice Actor</span>
+                    <span class="val">{{ char.voice_actor.name if char.voice_actor else "Unknown" }}</span>
+                    
+                    <div class="ability">
+                        <strong>Ability:</strong><br>
+                        {{ char.ability }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {% endfor %}
+        </div>
+
+</body>
