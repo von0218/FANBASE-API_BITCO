@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ooo Trading Cards</title>
+    <title>Ooo Information Cards</title>
     <style>
         :root { 
             --card-gold: #f1c40f; 
@@ -11,23 +11,40 @@
 
         body { 
             background-color: #2c3e50; 
-            /* YOUR IMGUR LINK */
             background-image: url('https://i.imgur.com/T6KukmD.gif'); 
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
+            flex-direction: column; /* Stack title on top of cards */
+            align-items: center; 
             padding: 40px;
             margin: 0;
             min-height: 100vh;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
         }
 
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); z-index: -1;
+        }
+
+        /* NEW TITLE STYLING */
+        .page-title {
+            color: #f1c40f;
+            font-size: 3rem;
+            text-shadow: 3px 3px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000;
+            margin-bottom: 40px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .cards-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
         }
 
         .card-container { width: 260px; height: 360px; perspective: 1000px; margin: 20px; }
@@ -52,29 +69,35 @@
     </style>
 </head>
 <body>
-    {% for char in characters %}
-    <div class="card-container">
-        <div class="card-inner">
-            <div class="card-front">
-                <div class="art-placeholder">{{ char.name }}</div>
-                <p style="font-size: 0.7rem; letter-spacing: 2px; margin-top: 15px; font-weight: bold;">ADVENTURE TIME TCG</p>
-            </div>
-            <div class="card-back">
-                <div class="header">
-                    <span>{{ char.name.split(' ')[0] }}</span>
-                    <span class="hp">120 HP</span>
+
+    <h1 class="page-title">ADVENTURE TIME INFO CARDS</h1>
+
+    <div class="cards-wrapper">
+        {% for char in characters %}
+        <div class="card-container">
+            <div class="card-inner">
+                <div class="card-front">
+                    <div class="art-placeholder">{{ char.name }}</div>
+                    <p style="font-size: 0.7rem; letter-spacing: 2px; margin-top: 15px; font-weight: bold;">ADVENTURE TIME TCG</p>
                 </div>
-                <span class="label">Species</span>
-                <span class="val">{{ char.species }}</span>
-                <span class="label">Voice Actor</span>
-                <span class="val">{{ char.voice_actor.name if char.voice_actor else "Unknown" }}</span>
-                <div class="ability">
-                    <strong>Ability: Mathematical!</strong><br>
-                    Increases party algebraic levels by +15.
+                <div class="card-back">
+                    <div class="header">
+                        <span>{{ char.name.split(' ')[0] }}</span>
+                        <span class="hp">120 HP</span>
+                    </div>
+                    <span class="label">Species</span>
+                    <span class="val">{{ char.species }}</span>
+                    <span class="label">Voice Actor</span>
+                    <span class="val">{{ char.voice_actor.name if char.voice_actor else "Unknown" }}</span>
+                    <div class="ability">
+                        <strong>Ability: Mathematical!</strong><br>
+                        Increases party algebraic levels by +15.
+                    </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
+
 </body>
 </html>
