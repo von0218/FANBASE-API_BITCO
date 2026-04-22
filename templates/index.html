@@ -3,19 +3,74 @@
 <head>
     <title>Ooo Trading Cards</title>
     <style>
-        :root { --card-gold: #f1c40f; --card-blue: #3498db; --text-dark: #2c3e50; }
-        body { background-color: #1a1a1a; font-family: 'Segoe UI', sans-serif; display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
-        .card-container { width: 250px; height: 350px; perspective: 1000px; margin: 15px; }
-        .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; cursor: pointer; }
+        :root { 
+            --card-gold: #f1c40f; 
+            --card-blue: rgba(52, 152, 219, 0.85); 
+            --text-dark: #2c3e50; 
+        }
+
+        body { 
+            /* Pixel Art Background */
+            background-image: url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHJueXN4eHByOHBqZzR4eHByOHBqZzR4eHByOHBqZzR4eHByOHBqZzR4JnB2PTE/3o7TKMGpxx66GbdvO0/giphy.gif'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            padding: 40px;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Overlay to keep background from being too bright */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3); z-index: -1;
+        }
+
+        .card-container { width: 260px; height: 360px; perspective: 1000px; margin: 20px; }
+        
+        .card-inner { 
+            position: relative; width: 100%; height: 100%; 
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+            transform-style: preserve-3d; cursor: pointer; 
+        }
+
         .card-container:hover .card-inner { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 12px; border: 10px solid var(--card-gold); box-sizing: border-box; }
-        .card-front { background-color: var(--card-blue); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .card-art-placeholder { width: 80%; height: 60%; background: rgba(255,255,255,0.2); border: 2px dashed white; display: flex; align-items: center; justify-content: center; font-weight: bold; text-align: center; padding: 10px; }
-        .card-back { background-color: #fff; color: var(--text-dark); transform: rotateY(180deg); padding: 15px; display: flex; flex-direction: column; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--text-dark); margin-bottom: 15px; }
-        .hp { color: #e74c3c; font-weight: bold; }
-        .label { font-weight: bold; text-transform: uppercase; font-size: 0.7rem; color: #7f8c8d; display: block; }
-        .value { display: block; margin-bottom: 10px; font-size: 1rem; }
+
+        .card-front, .card-back { 
+            position: absolute; width: 100%; height: 100%; 
+            backface-visibility: hidden; border-radius: 15px; 
+            border: 10px solid var(--card-gold); box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Front Side */
+        .card-front { 
+            background-color: var(--card-blue); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            color: white; font-family: 'Courier New', Courier, monospace;
+        }
+
+        .art-placeholder { 
+            width: 80%; height: 60%; border: 3px dashed white; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; text-align: center; font-size: 1.2rem;
+        }
+
+        /* Back Side */
+        .card-back { 
+            background-color: #fff; color: var(--text-dark); 
+            transform: rotateY(180deg); padding: 20px; display: flex; flex-direction: column; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .header { display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid #2c3e50; padding-bottom: 5px; }
+        .hp { color: #e74c3c; }
+        .label { font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase; margin-top: 15px; display: block; }
+        .val { font-size: 1.1rem; font-weight: 500; display: block; border-bottom: 1px solid #eee; }
+        .ability { margin-top: auto; font-size: 0.85rem; font-style: italic; background: #f9f9f9; padding: 10px; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -24,32 +79,25 @@
     <div class="card-container">
         <div class="card-inner">
             <div class="card-front">
-                <div class="card-art-placeholder">{{ char.name }}</div>
-                <p style="font-size: 0.8rem; margin-top: 10px;">ADVENTURE TIME</p>
+                <div class="art-placeholder">{{ char.name }}</div>
+                <p style="letter-spacing: 2px; margin-top: 15px;">OOO EDITION</p>
             </div>
             
             <div class="card-back">
-                <div class="card-header">
-                    <span style="font-weight: bold;">{{ char.name.split(' ')[0] }}</span>
-                    <span class="hp">100 HP</span>
+                <div class="header">
+                    <span>{{ char.name.split(' ')[0] }}</span>
+                    <span class="hp">120 HP</span>
                 </div>
 
-                <div class="info-section">
-                    <span class="label">Species</span>
-                    <span class="value">{{ char.species }}</span>
+                <span class="label">Species</span>
+                <span class="val">{{ char.species }}</span>
 
-                    <span class="label">Voice Actor</span>
-                    <span class="value">
-                        {% if char.voice_actor %}
-                            {{ char.voice_actor.name }}
-                        {% else %}
-                            Unknown
-                        {% endif %}
-                    </span>
-                    
-                    <div style="margin-top: 20px; font-size: 0.8rem;">
-                        <strong>Ability:</strong> Mathematical! Increases algebraic levels by 10%.
-                    </div>
+                <span class="label">Voice Actor</span>
+                <span class="val">{{ char.voice_actor.name if char.voice_actor else "Unknown" }}</span>
+                
+                <div class="ability">
+                    <strong>Ability: Mathematical!</strong><br>
+                    Increases party energy and algebraic vibes by +20.
                 </div>
             </div>
         </div>
