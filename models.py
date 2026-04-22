@@ -13,6 +13,6 @@ class Character(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     species = Column(String, nullable=False)
-    ability = Column(String, nullable=True) # Matches the Ability section in your UI
+    ability = Column(String, nullable=True) # Matches the Ability section in UI
     actor_id = Column(Integer, ForeignKey("actors.id"))
     voice_actor = relationship("Actor", back_populates="characters")
