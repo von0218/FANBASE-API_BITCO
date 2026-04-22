@@ -1,6 +1,6 @@
 import os
 import traceback
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -9,19 +9,14 @@ from sqlalchemy.orm import Session
 import models
 from database import engine, get_db, SessionLocal
 
-# --- CRASH PREVENTION: Ensure folders exist before mounting ---
-if not os.path.exists("static"):
-    os.makedirs("static")
-if not os.path.exists("static/images"):
-    os.makedirs("static/images")
-# --------------------------------------------------------------
-
+# Initialize Database
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# Mount Static Files
+# Mount Static Files - This is what makes bg.gif accessible
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -29,7 +24,6 @@ def seed_data():
     db = SessionLocal()
     try:
         if not db.query(models.Actor).first():
-            # Seed logic remains the same
             actors = {
                 "jeremy": models.Actor(name="Jeremy Shada"),
                 "john": models.Actor(name="John DiMaggio"),
