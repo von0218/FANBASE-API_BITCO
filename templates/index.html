@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ooo Information Cards</title>
+    <title>Ooo Trading Cards</title>
     <style>
         :root { 
             --card-gold: #f1c40f; 
@@ -16,7 +16,7 @@
             background-position: center;
             background-attachment: fixed;
             display: flex; 
-            flex-direction: column; /* Stack title on top of cards */
+            flex-direction: column;
             align-items: center; 
             padding: 40px;
             margin: 0;
@@ -29,40 +29,37 @@
             background: rgba(0, 0, 0, 0.4); z-index: -1;
         }
 
-        /* NEW TITLE STYLING */
         .page-title {
             color: #f1c40f;
             font-size: 3rem;
-            text-shadow: 3px 3px 0px #000, -1px -1px 0px #000, 1px -1px 0px #000, -1px 1px 0px #000;
+            text-shadow: 3px 3px 0px #000;
             margin-bottom: 40px;
             letter-spacing: 4px;
             text-transform: uppercase;
             text-align: center;
         }
 
-        .cards-wrapper {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 1200px;
-        }
-
-        .card-container { width: 260px; height: 360px; perspective: 1000px; margin: 20px; }
+        .cards-wrapper { display: flex; flex-wrap: wrap; justify-content: center; max-width: 1300px; }
+        .card-container { width: 260px; height: 380px; perspective: 1000px; margin: 20px; }
         .card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; cursor: pointer; }
         .card-container:hover .card-inner { transform: rotateY(180deg); }
         .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; border: 10px solid var(--card-gold); box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        .card-front { background-color: var(--card-blue); display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .art-placeholder { 
-            width: 85%; height: 65%; border: 3px dashed rgba(255,255,255,0.5); 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; text-align: center; font-size: 1.3rem;
+        .card-front { background-color: var(--card-blue); display: flex; flex-direction: column; align-items: center; padding-top: 20px; color: white; }
+        
+        .card-image {
+            width: 85%; height: 60%;
+            object-fit: contain;
             background: rgba(255,255,255,0.1);
+            border: 2px solid white;
+            border-radius: 5px;
         }
+
+        .card-name-front { font-weight: bold; margin-top: 15px; font-size: 1.2rem; text-transform: uppercase; }
 
         .card-back { background-color: #fff; color: var(--text-dark); transform: rotateY(180deg); padding: 20px; display: flex; flex-direction: column; }
         .header { display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid var(--text-dark); padding-bottom: 5px; }
-        .hp { color: #e74c3c; font-weight: bold; }
+        .hp { color: #e74c3c; }
         .label { font-size: 0.7rem; color: #7f8c8d; text-transform: uppercase; margin-top: 15px; display: block; font-weight: bold;}
         .val { font-size: 1.1rem; display: block; border-bottom: 1px solid #eee; margin-bottom: 5px; }
         .ability { margin-top: auto; font-size: 0.85rem; font-style: italic; background: #f4f7f6; padding: 10px; border-radius: 8px; border-left: 4px solid var(--card-gold); }
@@ -77,9 +74,13 @@
         <div class="card-container">
             <div class="card-inner">
                 <div class="card-front">
-                    <div class="art-placeholder">{{ char.name }}</div>
-                    <p style="font-size: 0.7rem; letter-spacing: 2px; margin-top: 15px; font-weight: bold;">ADVENTURE TIME TCG</p>
+                    <img src="/static/{{ char.name.split(' ')[0].lower() }}.png" 
+                         alt="{{ char.name }}" 
+                         class="card-image"
+                         onerror="this.src='https://via.placeholder.com/200x250?text=No+Image'">
+                    <div class="card-name-front">{{ char.name }}</div>
                 </div>
+                
                 <div class="card-back">
                     <div class="header">
                         <span>{{ char.name.split(' ')[0] }}</span>
