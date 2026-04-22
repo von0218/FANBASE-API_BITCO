@@ -2,6 +2,7 @@ import os
 import traceback
 from fastapi import FastAPI, Depends, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -13,7 +14,10 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# Only templates are needed since we use an external GIF URL
+# MOUNTING THE ROOT: This tells FastAPI to look in your main folder for the PNGs
+# We use "." to represent the current directory
+app.mount("/static", StaticFiles(directory="."), name="static")
+
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -49,7 +53,7 @@ def seed_data():
             db.add_all(characters)
             db.commit()
     except Exception as e:
-        print(f"Seed error: {e}")
+        print(f"Seed Error: {e}")
     finally:
         db.close()
 
