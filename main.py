@@ -1,4 +1,5 @@
 import os
+import traceback
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -12,7 +13,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Adventure Time Fanbase API")
 
-# Mount templates - Ensure your folder is named 'templates' in GitHub
+# Ensure the folder is named 'templates' in your root directory
 templates = Jinja2Templates(directory="templates")
 
 @app.on_event("startup")
@@ -57,14 +58,21 @@ def read_root():
     return RedirectResponse(url="/ui")
 
 @app.get("/ui", response_class=HTMLResponse)
-def get_ui(request: Request, db: Session = Depends(get_db)):
+async def get_ui(request: Request, db: Session = Depends(get_db)):
     try:
         characters = db.query(models.Character).all()
-        return templates.TemplateResponse("index.html", {"request": request, "characters": characters})
-    except Exception as e:
-        # This will show you the error in the browser if the page fails
-        return HTMLResponse(content=f"<html><body><h1>UI Error</h1><p>{str(e)}</p></body></html>", status_code=500)
+        
+        # FIXED: Pass the context explicitly to avoid the 'tuple' error
+        return templates.TemplateResponse(
+            name="index.html", 
+            context={"request": request, "characters": characters}
+        )
+    except Exception:
+        # If it fails, this will show the full error in your browser for debugging
+        error_msg = traceback.format_exc()
+        return HTMLResponse(content=f"<h3>UI Error Details:</h3><pre>{error_msg}</pre>", status_code=500)
 
+# Standard API endpoints
 @app.get("/characters")
 def get_all_characters(db: Session = Depends(get_db)):
     return db.query(models.Character).all()
